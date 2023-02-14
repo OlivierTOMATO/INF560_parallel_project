@@ -200,14 +200,14 @@ int main(int argc, char **argv)
      ******/
 
     /* Timer start */
-    gettimeofday(&t1, NULL);
+    double start_time = MPI_Wtime();
 
     int rank, N;
     MPI_Status status;
     // the variable to set
     printf("file size: %d", n_bytes);
     int chunk_size = 100000;
-    int freq = n_bytes / chunk_size + 1;
+    int freq = n_bytes / chunk_size + (n_bytes % chunk_size > 0);
     MPI_Request *req = malloc(freq * sizeof(MPI_Request));
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -223,7 +223,6 @@ int main(int argc, char **argv)
             MPI_Recv(&dst, 1, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &status);
             MPI_Send(&i, 1, MPI_INT, dst, 0, MPI_COMM_WORLD);
             MPI_Irecv(&over, 1, MPI_INT, dst, 0, MPI_COMM_WORLD, &req[i / chunk_size]);
-            // printf("now in process %d %d %d\n", dst, i, over);
         }
 
         MPI_Waitall(freq, req, MPI_STATUSES_IGNORE);
@@ -238,7 +237,6 @@ int main(int argc, char **argv)
     }
     else
     {
-        // int* c = malloc(len * sizeof(int));
         int index;
         int start;
         int end;
@@ -273,7 +271,6 @@ int main(int argc, char **argv)
                 {
                     end = n_bytes;
                 }
-
                 start = index;
 
                 // if (index == 0)
@@ -303,7 +300,6 @@ int main(int argc, char **argv)
                     {
                         size = n_bytes - j;
                     }
-                    // printf("now in process %d\n", size);
 
                     distance = levenshtein(pattern[i], &buf[j], size, column);
 
@@ -331,11 +327,8 @@ int main(int argc, char **argv)
                    pattern[i], n_matches[i]);
         }
         /* Timer stop */
-        gettimeofday(&t2, NULL);
-
-        duration = (t2.tv_sec - t1.tv_sec) + ((t2.tv_usec - t1.tv_usec) / 1e6);
-
-        printf("APM done in %lf s\n", duration);
+        double end_time = MPI_Wtime();
+        printf("APM done in %lf s\n", end_time - start_time);
     }
 
     MPI_Finalize();
