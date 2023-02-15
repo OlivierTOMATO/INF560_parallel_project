@@ -200,6 +200,7 @@ main( int argc, char ** argv )
   /* Timer start */
   gettimeofday(&t1, NULL);
 
+    printf("end index: %d", n_bytes);
   /* Check each pattern one by one */
   for ( i = 0 ; i < nb_patterns ; i++ )
   {

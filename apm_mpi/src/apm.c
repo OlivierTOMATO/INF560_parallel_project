@@ -168,9 +168,20 @@ int main(int argc, char **argv)
         strncpy(pattern[i], argv[i + 3], (l + 1));
     }
 
-    printf("Approximate Pattern Mathing: "
-           "looking for %d pattern(s) in file %s w/ distance of %d\n",
-           nb_patterns, filename, approx_factor);
+    
+    int rank, N;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &N);
+
+    /* Timer start */
+    double start_time = MPI_Wtime();
+    
+    if(rank == 0){
+        printf("Approximate Pattern Mathing: "
+            "looking for %d pattern(s) in file %s w/ distance of %d\n",
+            nb_patterns, filename, approx_factor);
+    }
 
     buf = read_input_file(filename, &n_bytes);
     if (buf == NULL)
@@ -199,19 +210,12 @@ int main(int argc, char **argv)
      * BEGIN MAIN LOOP
      ******/
 
-    /* Timer start */
-    double start_time = MPI_Wtime();
-
-    int rank, N;
     MPI_Status status;
     // the variable to set
     printf("file size: %d", n_bytes);
     int chunk_size = 100000;
     int freq = n_bytes / chunk_size + (n_bytes % chunk_size > 0);
     MPI_Request *req = malloc(freq * sizeof(MPI_Request));
-    MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &N);
 
     if (rank == 0)
     {
