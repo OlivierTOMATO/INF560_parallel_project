@@ -213,7 +213,7 @@ int main(int argc, char **argv)
     MPI_Status status;
     // the variable to set
     printf("file size: %d", n_bytes);
-    int chunk_size = 100000;
+    int chunk_size = 1000000;
     int freq = n_bytes / chunk_size + (n_bytes % chunk_size > 0);
     MPI_Request *req = malloc(freq * sizeof(MPI_Request));
 

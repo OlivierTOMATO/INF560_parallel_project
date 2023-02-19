@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <mpi.h>
+#include <omp.h>
 
 #define APM_DEBUG 0
 
@@ -116,10 +117,10 @@ int main(int argc, char **argv)
     double duration;
     int n_bytes;
     int *n_matches;
+
     
     /* Timer start */
     gettimeofday(&t1, NULL);
-
     
     int rank, N;
     MPI_Init(&argc, &argv);
@@ -209,54 +210,64 @@ int main(int argc, char **argv)
      * BEGIN MAIN LOOP
      ******/
     
-    
-
     /* Check each pattern one by one */
+    /* Implementtation of opnemp */ 
+    // #pragma omp for schedule(static)
+    // #pragma omp parallel
     for (i = 0; i < nb_patterns; i++)
     {
         int size_pattern = strlen(pattern[i]);
-        int *column;
-
+        int size = size_pattern;
         /* Initialize the number of matches to 0 */
+        int local_num = 0;
         local_n_matches[i] = 0;
-
-        column = (int *)malloc((size_pattern + 1) * sizeof(int));
-        if (column == NULL)
-        {
-            fprintf(stderr, "Error: unable to allocate memory for column (%ldB)\n",
-                    (size_pattern + 1) * sizeof(int));
-            return 1.0;
-        }
+        int *column;
+        int distance;
 
         /* Traverse the input data up to the end of the file */
-        for (j = start_point; j < end_point; j++)
+        /* CJ: note here, the column should be set private for each thread, and initialized.
+            Use reduction to avoid race condition
+            With this, should increase the efficiency more than 50%
+        */
+        #pragma omp parallel private(j, distance, column) firstprivate(size)
         {
-            int distance = 0;
-            int size;
+            column = (int *)malloc((size_pattern + 1) * sizeof(int));
+            #pragma omp for reduction(+:local_num)
+            for (j = start_point; j < end_point; j++)
+            {
+                distance = 0;
 
 #if APM_DEBUG
-            if (j % 100 == 0)
-            {
-                printf("Procesing byte %d (out of %d)\n", j, n_bytes);
-            }
+                if (j % 100 == 0)
+                {
+                    printf("Procesing byte %d (out of %d)\n", j, n_bytes);
+                }
 #endif
 
-            size = size_pattern;
-            if (n_bytes - j < size_pattern)
-            {
-                size = n_bytes - j;
-            }
+                if (n_bytes - j < size_pattern)
+                {
+                    size = n_bytes - j;
+                }
 
-            distance = levenshtein(pattern[i], &buf[j], size, column);
+                distance = levenshtein(pattern[i], &buf[j], size, column);
 
-            if (distance <= approx_factor)
-            {
-                local_n_matches[i]++;
+                if (distance <= approx_factor)
+                {
+                    local_num++;
+                }
             }
+            free(column);
         }
-        free(column);
+        
+        local_n_matches[i] = local_num;
     }
 
+    // /* Timer stop */
+    // gettimeofday(&t2, NULL);
+
+    // duration = (t2.tv_sec - t1.tv_sec) + ((t2.tv_usec - t1.tv_usec) / 1e6);
+
+    // printf("APM done in %lf s\n", duration);
 
     /*****
      * END MAIN LOOP
