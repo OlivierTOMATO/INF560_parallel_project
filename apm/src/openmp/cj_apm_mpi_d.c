@@ -1,6 +1,10 @@
 /**
  * APPROXIMATE PATTERN MATCHING
  *
+ * Divide the record file into chunck(size to be determined)
+ * Allocate it dynamically in rank 0 to other ranks
+ * Other rank deal with all patterns sequentially with thier chunk
+ *
  * INF560
  */
 #include <string.h>
@@ -13,6 +17,7 @@
 // input mpi
 
 #define APM_DEBUG 0
+#define chunk_size 10000
 
 char *
 read_input_file(char *filename, int *size)
@@ -168,7 +173,6 @@ int main(int argc, char **argv)
         strncpy(pattern[i], argv[i + 3], (l + 1));
     }
 
-    
     int rank, N;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -176,12 +180,6 @@ int main(int argc, char **argv)
 
     /* Timer start */
     double start_time = MPI_Wtime();
-    
-    if(rank == 0){
-        printf("Approximate Pattern Mathing: "
-            "looking for %d pattern(s) in file %s w/ distance of %d\n",
-            nb_patterns, filename, approx_factor);
-    }
 
     buf = read_input_file(filename, &n_bytes);
     if (buf == NULL)
@@ -212,31 +210,33 @@ int main(int argc, char **argv)
 
     MPI_Status status;
     // the variable to set
-    printf("file size: %d", n_bytes);
-    int chunk_size = 100000;
     int freq = n_bytes / chunk_size + (n_bytes % chunk_size > 0);
-    MPI_Request *req = malloc(freq * sizeof(MPI_Request));
 
     if (rank == 0)
     {
-        int num = 0;
+        printf("MPI + OPENMP: \nMPI: Divide the record file into chunck(constant) and Allocate it dynamically in rank 0 to other ranks and Other ranks will deal with all patterns sequentially with thier chunks\nOPENMP: The chunk received by each rank is run in parallel in all the available threads\n");
+
+        printf("Approximate Pattern Mathing: "
+               "looking for %d pattern(s) in file %s w/ distance of %d\n",
+               nb_patterns, filename, approx_factor);
+
+        int dest_rank;
+
         for (i = 0; i < n_bytes; i += chunk_size)
         {
-            int over;
-            int dst;
-            MPI_Recv(&dst, 1, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &status);
-            MPI_Send(&i, 1, MPI_INT, dst, 0, MPI_COMM_WORLD);
-            MPI_Irecv(&over, 1, MPI_INT, dst, 0, MPI_COMM_WORLD, &req[i / chunk_size]);
+            MPI_Recv(&dest_rank, 1, MPI_INTEGER, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            MPI_Send(&i, 1, MPI_INTEGER, dest_rank, 0, MPI_COMM_WORLD);
         }
 
-        MPI_Waitall(freq, req, MPI_STATUSES_IGNORE);
-
-        for (i = 1; i < N; i++)
+        /* send a message that tell the workers to stop */
+        for (dest_rank = 1; dest_rank < N; dest_rank++)
         {
-            int dst;
-            MPI_Recv(&dst, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &status);
-            int stop = -1;
-            MPI_Send(&stop, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+            int ready;
+            MPI_Recv(&ready, 1, MPI_INTEGER, dest_rank, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            int stop_value = -1;
+            MPI_Send(&stop_value, 1, MPI_INTEGER, dest_rank, 0, MPI_COMM_WORLD);
         }
     }
     else
@@ -271,20 +271,12 @@ int main(int argc, char **argv)
                 }
                 start = index;
 
-                // if (index == 0)
-                // {
-                //     start = index;
-                // }
-                // else
-                // {
-                //     start = index - size_pattern + 1;
-                // }
-
-                /* Traverse the input data up to the end of the file */
-                #pragma omp parallel private(j, distance, column) firstprivate(size)
+/* Traverse the input data up to the end of the file */
+#pragma omp parallel private(j, distance, column) firstprivate(size)
                 {
                     column = (int *)malloc((size_pattern + 1) * sizeof(int));
-                    #pragma omp for reduction(+:local_num)
+#pragma omp for reduction(+ \
+                          : local_num)
                     for (j = start; j < end; j++)
                     {
                         distance = 0;
@@ -310,11 +302,8 @@ int main(int argc, char **argv)
                     }
                     free(column);
                 }
-                
-                local_n_matches[i] += local_num;
 
-                int over = 1;
-                MPI_Send(&over, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+                local_n_matches[i] += local_num;
             }
         }
     }
@@ -323,19 +312,20 @@ int main(int argc, char **argv)
 
     if (rank == 0)
     {
+        /* Timer stop */
+        double end_time = MPI_Wtime();
+
         for (i = 0; i < nb_patterns; i++)
         {
             printf("Number of matches for pattern <%s>: %d\n",
                    pattern[i], n_matches[i]);
         }
-        /* Timer stop */
-        double end_time = MPI_Wtime();
-        printf("APM done in %lf s\n", end_time - start_time);
+        printf("APM done in %lf s\n\n", end_time - start_time);
     }
 
-    MPI_Finalize();
     free(local_n_matches);
     free(n_matches);
+    MPI_Finalize();
 
     /*****
      * END MAIN LOOP

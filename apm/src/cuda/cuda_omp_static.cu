@@ -11,7 +11,7 @@
 #include <sys/time.h>
 #include <omp.h>
 
-#include "apm_cuda_wrapper.h"
+#include "kernel.h"
 
 #define APM_DEBUG 0
 
@@ -109,7 +109,7 @@ extern "C" void findMatch(int *local_n_matches, char *buf, int nb_patterns, char
     int num;
     int i;
     char *d_buf;
-    double percentage = 0.7;
+    double percentage = 0.9;
     int end_1 = start + (end - start) * percentage;
     int start_1 = end_1 + 1;
 

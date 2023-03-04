@@ -1,6 +1,10 @@
 /**
  * APPROXIMATE PATTERN MATCHING
  *
+ * Divide the record file into chunck(size to be determined)
+ * Allocate it dynamically in rank 0 to other ranks
+ * Other rank deal with all patterns sequentially with thier chunk
+ * 
  * INF560
  */
 #include <string.h>
@@ -177,12 +181,6 @@ int main(int argc, char **argv)
     /* Timer start */
     double start_time = MPI_Wtime();
     
-    if(rank == 0){
-        printf("Approximate Pattern Mathing: "
-            "looking for %d pattern(s) in file %s w/ distance of %d\n",
-            nb_patterns, filename, approx_factor);
-    }
-
     buf = read_input_file(filename, &n_bytes);
     if (buf == NULL)
     {
@@ -212,13 +210,14 @@ int main(int argc, char **argv)
 
     MPI_Status status;
     // the variable to set
-    printf("file size: %d", n_bytes);
-    int chunk_size = 1000000;
+    int chunk_size = 1000;
     int freq = n_bytes / chunk_size + (n_bytes % chunk_size > 0);
-    MPI_Request *req = malloc(freq * sizeof(MPI_Request));
 
     if (rank == 0)
     {
+        printf("Approximate Pattern Mathing: "
+            "looking for %d pattern(s) in file %s w/ distance of %d\n",
+            nb_patterns, filename, approx_factor);
         int num = 0;
         for (i = 0; i < n_bytes; i += chunk_size)
         {
@@ -226,10 +225,7 @@ int main(int argc, char **argv)
             int dst;
             MPI_Recv(&dst, 1, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &status);
             MPI_Send(&i, 1, MPI_INT, dst, 0, MPI_COMM_WORLD);
-            MPI_Irecv(&over, 1, MPI_INT, dst, 0, MPI_COMM_WORLD, &req[i / chunk_size]);
         }
-
-        MPI_Waitall(freq, req, MPI_STATUSES_IGNORE);
 
         for (i = 1; i < N; i++)
         {
@@ -314,9 +310,6 @@ int main(int argc, char **argv)
                 }
 
                 free(column);
-
-                int over = 1;
-                MPI_Send(&over, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
             }
         }
     }
@@ -335,9 +328,9 @@ int main(int argc, char **argv)
         printf("APM done in %lf s\n", end_time - start_time);
     }
 
-    MPI_Finalize();
     free(local_n_matches);
     free(n_matches);
+    MPI_Finalize();
 
     /*****
      * END MAIN LOOP

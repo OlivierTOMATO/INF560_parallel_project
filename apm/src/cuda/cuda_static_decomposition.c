@@ -1,9 +1,6 @@
 /**
  * APPROXIMATE PATTERN MATCHING
  *
- * Divide the record file into average size (size == file size / the number of ranks)
- * Allocate it directly to all the ranks (including the rank 0)
- * 
  * INF560
  */
 #include <string.h>
@@ -14,7 +11,8 @@
 #include <sys/time.h>
 #include <mpi.h>
 
-#define APM_DEBUG 0
+#include "kernel.h"
+
 
 char *
 read_input_file(char *filename, int *size)
@@ -121,7 +119,7 @@ int main(int argc, char **argv)
     int *n_matches;
     
     /* Timer start */
-    double start_time = MPI_Wtime();
+    gettimeofday(&t1, NULL);
 
     
     int rank, N;
@@ -182,6 +180,8 @@ int main(int argc, char **argv)
 
     if (rank == 0)
     {
+        printf("CUDA + MPI: \nMPI: Divide the record file into average size (size == file size / the number of ranks) and Allocate it directly to all the ranks (including the rank 0)\n CUDA: The chunk received by each rank is run in parallel inside the GPU\n");
+
         printf("Approximate Pattern Mathing: "
                "looking for %d pattern(s) in file %s w/ distance of %d (function called: mpi_data_split)\n",
                nb_patterns, filename, approx_factor);
@@ -204,60 +204,18 @@ int main(int argc, char **argv)
         end_point = n_bytes;
     }
 
-    printf("start index: %d, end index: %d\n", start_point, end_point);
+
+    // printf("start index: %d, end index: %d\n", start_point, end_point);
 
     n_matches = (int *)malloc(nb_patterns * sizeof(int));
     int *local_n_matches = (int *)malloc((nb_patterns) * sizeof(int));
-    
-    
     /*****
      * BEGIN MAIN LOOP
      ******/
-    /* Check each pattern one by one */
-    for (i = 0; i < nb_patterns; i++)
-    {
-        int size_pattern = strlen(pattern[i]);
-        int *column;
-
-        /* Initialize the number of matches to 0 */
-        local_n_matches[i] = 0;
-
-        column = (int *)malloc((size_pattern + 1) * sizeof(int));
-        if (column == NULL)
-        {
-            fprintf(stderr, "Error: unable to allocate memory for column (%ldB)\n",
-                    (size_pattern + 1) * sizeof(int));
-            return 1.0;
-        }
-
-        /* Traverse the input data up to the end of the file */
-        for (j = start_point; j < end_point; j++)
-        {
-            int distance = 0;
-            int size;
-
-#if APM_DEBUG
-            if (j % 100 == 0)
-            {
-                printf("Procesing byte %d (out of %d)\n", j, n_bytes);
-            }
-#endif
-
-            size = size_pattern;
-            if (n_bytes - j < size_pattern)
-            {
-                size = n_bytes - j;
-            }
-
-            distance = levenshtein(pattern[i], &buf[j], size, column);
-
-            if (distance <= approx_factor)
-            {
-                local_n_matches[i]++;
-            }
-        }
-        free(column);
-    }
+    int nbGPU;
+    cudaGetDeviceCount(&nbGPU);
+    cudaSetDevice (rank % nbGPU) ;
+    findMatch(local_n_matches, buf, nb_patterns, pattern, start_point, end_point, n_bytes, approx_factor);
 
 
     /*****
@@ -274,8 +232,11 @@ int main(int argc, char **argv)
         }
 
         /* Timer stop */
-        double end_time = MPI_Wtime();
-        printf("APM done in %lf s\n", end_time - start_time);
+        gettimeofday(&t2, NULL);
+
+        duration = (t2.tv_sec - t1.tv_sec) + ((t2.tv_usec - t1.tv_usec) / 1e6);
+
+        printf("APM done in %lf s\n", duration);
     }
 
     MPI_Finalize();

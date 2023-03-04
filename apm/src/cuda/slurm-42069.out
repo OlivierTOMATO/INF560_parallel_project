@@ -1,0 +1,11 @@
+CUDA + MPI: 
+MPI: Divide the record file into average size (size == file size / the number of ranks) and Allocate it directly to all the ranks (including the rank 0)
+ CUDA: The chunk received by each rank is run in parallel inside the GPU
+Approximate Pattern Mathing: looking for 2 pattern(s) in file ../../dna/chr7.fa w/ distance of 2 (function called: mpi_data_split)
+6222816 6533956 6533957 9334224
+3111408 3422548 3422549 6222816
+9334224 9645364 9645365 12445630
+0 311140 311141 3111408
+Number of matches for pattern <AATGCTAGATTTAAGGAGTTGCTTA>: 2
+Number of matches for pattern <AAAAATCTTTGTATTAGAAAAAGT>: 2
+APM done in 13.581344 s

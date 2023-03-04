@@ -1,0 +1,48 @@
+Approximate Pattern Mathing: looking for 2 pattern(s) in file ../dna/chr22.fa w/ distance of 2 (function called: mpi_data_split)
+Number of matches for pattern <AABCCC>: 296393
+Number of matches for pattern <ABBCCC>: 88065
+APM done in 0.979940 s
+Approximate Pattern Mathing: looking for 3 pattern(s) in file ../dna/chr22.fa w/ distance of 2 (function called: mpi_data_split)
+Number of matches for pattern <AABCCCacdddv>: 2
+Number of matches for pattern <ABBCCCdfdsvvv>: 2
+Number of matches for pattern <aaaaaa>: 1613203
+APM done in 3.230274 s
+Approximate Pattern Mathing: looking for 1 pattern(s) in file ../dna/chr22.fa w/ distance of 2 (function called: mpi_data_split)
+Number of matches for pattern <CDASDSA>: 2
+APM done in 0.626309 s
+Approximate Pattern Mathing: looking for 2 pattern(s) in file ../dna/chr22.fa w/ distance of 2 (function called: mpi_data_split)
+start index: 6479356, end index: 12958712
+start index: 32396780, end index: 38876136
+start index: 0, end index: 6479356
+start index: 12958712, end index: 19438068
+start index: 19438068, end index: 25917424
+start index: 38876136, end index: 45355492
+start index: 45355492, end index: 51834845
+start index: 25917424, end index: 32396780
+Number of matches for pattern <AABCCC>: 296393
+Number of matches for pattern <ABBCCC>: 88065
+APM done in 1.742493 s
+Approximate Pattern Mathing: looking for 3 pattern(s) in file ../dna/chr22.fa w/ distance of 2 (function called: mpi_data_split)
+start index: 6479356, end index: 12958712
+start index: 12958712, end index: 19438068
+start index: 0, end index: 6479356
+start index: 19438068, end index: 25917424
+start index: 25917424, end index: 32396780
+start index: 32396780, end index: 38876136
+start index: 38876136, end index: 45355492
+start index: 45355492, end index: 51834845
+Number of matches for pattern <AABCCCacdddv>: 2
+Number of matches for pattern <ABBCCCdfdsvvv>: 2
+Number of matches for pattern <aaaaaa>: 1613203
+APM done in 7.951479 s
+Approximate Pattern Mathing: looking for 1 pattern(s) in file ../dna/chr22.fa w/ distance of 2 (function called: mpi_data_split)
+start index: 6479356, end index: 12958712
+start index: 12958712, end index: 19438068
+start index: 0, end index: 6479356
+start index: 19438068, end index: 25917424
+start index: 32396780, end index: 38876136
+start index: 25917424, end index: 32396780
+start index: 38876136, end index: 45355492
+start index: 45355492, end index: 51834845
+Number of matches for pattern <CDASDSA>: 2
+APM done in 1.189875 s

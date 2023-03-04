@@ -1,0 +1,13 @@
+#!/bin/bash -l
+
+#SBATCH -n 8
+#SBATCH -N 8
+
+OMP_NUM_THREADS=8 mpirun ./run 2 ../../dna/chr22.fa AABCCC ABBCCC AAASSCC AASFFF FFSSADD GASDSFA GGGAADD
+# OMP_NUM_THREADS=2 mpirun ./run 2 ../../dna/chr22.fa AABCCCacdddv ABBCCCdfdsvvv aaaaaa
+# OMP_NUM_THREADS=2 mpirun ./run 2 ../../dna/chr22.fa CDASDSA
+
+
+# OMP_NUM_THREADS=2 mpirun ./cj_apm_mpi_static 2 ../../dna/chr22.fa AABCCC ABBCCC
+# OMP_NUM_THREADS=2 mpirun ./cj_apm_mpi_static 2 ../../dna/chr22.fa AABCCCacdddv ABBCCCdfdsvvv aaaaaa
+# OMP_NUM_THREADS=2 mpirun ./cj_apm_mpi_static 2 ../../dna/chr22.fa CDASDSA

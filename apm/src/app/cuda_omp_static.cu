@@ -11,7 +11,7 @@
 #include <sys/time.h>
 #include <omp.h>
 
-#include "apm_cuda_wrapper.h"
+#include "kernel.h"
 
 #define APM_DEBUG 0
 
@@ -102,21 +102,18 @@ void __global__ matches_kernel(char *d_buf, char *d_pattern, int *d_num, int siz
     free(columns);
 }
 
-extern "C" void findMatch(int *local_n_matches, char *buf, int nb_patterns, char **pattern, int start, int end, int n_bytes, int approx_factor)
+extern "C" void findMatch(int *local_n_matches, char *buf, int nb_patterns, char **pattern, int start, int end, int n_bytes, int approx_factor, double percentage)
 {
     int *d_num;
     char *d_pattern;
     int num;
     int i;
     char *d_buf;
-    double percentage = 0.7;
     int end_1 = start + (end - start) * percentage;
     int start_1 = end_1 + 1;
 
-    printf("%d %d %d %d\n", start, end_1, start_1, end);
-
-    cudaMalloc((void **)&d_buf, (end - start + 100) * sizeof(char));
-    cudaMemcpy(d_buf, &buf[start], end - start + 100, cudaMemcpyHostToDevice);
+    cudaMalloc((void **)&d_buf, (end - start + 20) * sizeof(char));
+    cudaMemcpy(d_buf, &buf[start], end - start + 20, cudaMemcpyHostToDevice);
     for (i = 0; i < nb_patterns; i++)
     {
         int size_pattern = strlen(pattern[i]);
@@ -171,9 +168,9 @@ extern "C" void findMatch(int *local_n_matches, char *buf, int nb_patterns, char
             }
             free(column);
         }
-
         cudaMemcpyAsync(&local_n_matches[i], d_num, sizeof(int), cudaMemcpyDeviceToHost);
 
+        printf("start: %d, end: %d :matches %d\n", start, end_1, local_n_matches[i]);
         cudaStreamSynchronize(stream);
 
         local_n_matches[i] += local_num;

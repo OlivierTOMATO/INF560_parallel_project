@@ -118,10 +118,9 @@ int main(int argc, char **argv)
     int n_bytes;
     int *n_matches;
 
-    
     /* Timer start */
     gettimeofday(&t1, NULL);
-    
+
     int rank, N;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -177,7 +176,6 @@ int main(int argc, char **argv)
         strncpy(pattern[i], argv[i + 3], (l + 1));
     }
 
-
     if (rank == 0)
     {
         printf("Approximate Pattern Mathing: "
@@ -192,7 +190,6 @@ int main(int argc, char **argv)
         MPI_Abort(MPI_COMM_WORLD, 0);
         return 1.0;
     }
-
 
     int start_point = rank * (n_bytes / N + (n_bytes % N > 0));
     int end_point = (rank + 1) * (n_bytes / N + (n_bytes % N > 0));
@@ -209,11 +206,9 @@ int main(int argc, char **argv)
     /*****
      * BEGIN MAIN LOOP
      ******/
-    
+
     /* Check each pattern one by one */
-    /* Implementtation of opnemp */ 
-    // #pragma omp for schedule(static)
-    // #pragma omp parallel
+    /* Implementtation of opnemp */
     for (i = 0; i < nb_patterns; i++)
     {
         int size_pattern = strlen(pattern[i]);
@@ -224,15 +219,16 @@ int main(int argc, char **argv)
         int *column;
         int distance;
 
-        /* Traverse the input data up to the end of the file */
-        /* CJ: note here, the column should be set private for each thread, and initialized.
-            Use reduction to avoid race condition
-            With this, should increase the efficiency more than 50%
-        */
-        #pragma omp parallel private(j, distance, column) firstprivate(size)
+/* Traverse the input data up to the end of the file */
+/* CJ: note here, the column should be set private for each thread, and initialized.
+    Use reduction to avoid race condition
+    With this, should increase the efficiency more than 50%
+*/
+#pragma omp parallel private(j, distance, column) firstprivate(size)
         {
             column = (int *)malloc((size_pattern + 1) * sizeof(int));
-            #pragma omp for reduction(+:local_num)
+#pragma omp for reduction(+ \
+                          : local_num)
             for (j = start_point; j < end_point; j++)
             {
                 distance = 0;
@@ -258,7 +254,7 @@ int main(int argc, char **argv)
             }
             free(column);
         }
-        
+
         local_n_matches[i] = local_num;
     }
 
