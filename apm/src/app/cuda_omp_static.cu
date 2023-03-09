@@ -170,7 +170,6 @@ extern "C" void findMatch(int *local_n_matches, char *buf, int nb_patterns, char
         }
         cudaMemcpyAsync(&local_n_matches[i], d_num, sizeof(int), cudaMemcpyDeviceToHost);
 
-        printf("start: %d, end: %d :matches %d\n", start, end_1, local_n_matches[i]);
         cudaStreamSynchronize(stream);
 
         local_n_matches[i] += local_num;

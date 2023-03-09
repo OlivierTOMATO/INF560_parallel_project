@@ -1,0 +1,78 @@
+Sequential Pattern Matching code
+Approximate Pattern Mathing: looking for 7 pattern(s) in file ../../dna/chr7.fa w/ distance of 2
+Number of matches for pattern <AABCCC>: 110184
+Number of matches for pattern <ABBCCC>: 28147
+Number of matches for pattern <AAASSCC>: 9061
+Number of matches for pattern <AASFFF>: 2
+Number of matches for pattern <FFSSADD>: 2
+Number of matches for pattern <GASDSFA>: 2
+Number of matches for pattern <GASDSFA>: 2
+APM done in 15.604451 s
+parallel Pattern Matching code
+Approximate Pattern Mathing: looking for 7 pattern(s) in file ../../dna/chr7.fa w/ distance of 2
+GPU: 0 OMP: 1
+We are assuming that one will never input patterns more than 20, otherwise it makes our app look redundant
+OK, we plan to dynamically allocate your pattern to different process we have
+given that you don't have a GPU and have single openmp thread
+our final decision is to implement pure MPI over Dynamic Pattern Distribution
+Our final decision is to use: decision 1
+Number of matches for pattern <AABCCC>: 110184
+Number of matches for pattern <ABBCCC>: 28147
+Number of matches for pattern <AAASSCC>: 9061
+Number of matches for pattern <AASFFF>: 2
+Number of matches for pattern <FFSSADD>: 2
+Number of matches for pattern <GASDSFA>: 2
+Number of matches for pattern <GASDSFA>: 2
+APM done in 2.358684 s
+
+parallel Pattern Matching code
+Approximate Pattern Mathing: looking for 7 pattern(s) in file ../../dna/chr7.fa w/ distance of 2
+GPU: 0 OMP: 8
+We are assuming that one will never input patterns more than 20, otherwise it makes our app look redundant
+OK, we plan to dynamically allocate your pattern to different process we have
+given that you don't have a GPU and have multiple openmp threads
+our final decision is to implement MPI + OMP over Dynamic Pattern Distribution
+Our final decision is to use: decision 2
+Number of matches for pattern <AABCCC>: 110184
+Number of matches for pattern <ABBCCC>: 28147
+Number of matches for pattern <AAASSCC>: 9061
+Number of matches for pattern <AASFFF>: 2
+Number of matches for pattern <FFSSADD>: 2
+Number of matches for pattern <GASDSFA>: 2
+Number of matches for pattern <GASDSFA>: 2
+APM done in 2.478388 s
+
+parallel Pattern Matching code
+Approximate Pattern Mathing: looking for 7 pattern(s) in file ../../dna/chr7.fa w/ distance of 2
+GPU: 1 OMP: 1
+We are assuming that one will never input patterns more than 20, otherwise it makes our app look redundant
+OK, we plan to dynamically allocate your pattern to different process we have
+given that you have a GPU and have single openmp thread
+our final decision is to implement MPI with each process running CUDA, over Dynamic Pattern Distribution
+Our final decision is to use: decision 3
+Number of matches for pattern <AABCCC>: 110184
+Number of matches for pattern <ABBCCC>: 28147
+Number of matches for pattern <AAASSCC>: 9061
+Number of matches for pattern <AASFFF>: 2
+Number of matches for pattern <FFSSADD>: 2
+Number of matches for pattern <GASDSFA>: 2
+Number of matches for pattern <GASDSFA>: 2
+APM done in 0.311582 s
+
+parallel Pattern Matching code
+Approximate Pattern Mathing: looking for 7 pattern(s) in file ../../dna/chr7.fa w/ distance of 2
+GPU: 1 OMP: 8
+We are assuming that one will never input patterns more than 20, otherwise it makes our app look redundant
+OK, we plan to dynamically allocate your pattern to different process we have
+given that you have a GPU and have multiple openmp threads
+our final decision is to implement MPI with each process running hybrid OMP + CUDA, over Dynamic Pattern Distribution
+Our final decision is to use: decision 4
+Number of matches for pattern <AABCCC>: 110184
+Number of matches for pattern <ABBCCC>: 28147
+Number of matches for pattern <AAASSCC>: 9061
+Number of matches for pattern <AASFFF>: 2
+Number of matches for pattern <FFSSADD>: 2
+Number of matches for pattern <GASDSFA>: 2
+Number of matches for pattern <GASDSFA>: 2
+APM done in 0.258587 s
+

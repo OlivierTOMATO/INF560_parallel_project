@@ -1,2 +1,4 @@
 MPI ONLY: Divide the record file into chunck(constant) and Allocate it dynamically in rank 0 to other ranks and Other ranks will deal with all patterns sequentially with thier chunks
 Approximate Pattern Mathing: looking for 2 pattern(s) in file ../../dna/chr1.fa w/ distance of 2
+mpirun: Forwarding signal 18 to job
+slurmstepd: error: *** JOB 42181 ON monaco CANCELLED AT 2023-03-05T12:16:31 ***

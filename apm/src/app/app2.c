@@ -461,7 +461,7 @@ void decision_4(int rank, int N, int nb_patterns, char *filename, int approx_fac
             int *local_match;
             local_match = (int *)malloc(sizeof(int));
 
-            findMatch(local_match, buf, 1, &pattern[index], 0, n_bytes, n_bytes, approx_factor, 0.95);
+            findMatch(local_match, buf, 1, &pattern[index], 0, n_bytes, n_bytes, approx_factor, 0.9);
 
             /*****
              * END MAIN LOOP
@@ -877,7 +877,6 @@ void decision_10(int rank, int N, int nb_patterns, char *filename, int approx_fa
                     local_num++;
                 }
             }
-            free(column);
         }
 
         local_n_matches[i] = local_num;
@@ -1027,12 +1026,24 @@ void decision_6(int rank, int N, int nb_patterns, char *filename, int approx_fac
     int i, j;
     n_matches = (int *)malloc(nb_patterns * sizeof(int));
     int *local_n_matches = (int *)malloc((nb_patterns) * sizeof(int));
+
+    for (i = 0; i < nb_patterns; i++)
+    {
+        n_matches[i] = 0;
+        local_n_matches[i] = 0;
+    }
     MPI_Status status;
     // the variable to set
     int freq = n_bytes / chunk_size + (n_bytes % chunk_size > 0);
 
     if (rank == 0)
     {
+        printf("MPI + OPENMP: \nMPI: Divide the record file into chunck(constant) and Allocate it dynamically in rank 0 to other ranks and Other ranks will deal with all patterns sequentially with thier chunks\nOPENMP: The chunk received by each rank is run in parallel in all the available threads\n");
+
+        printf("Approximate Pattern Mathing: "
+               "looking for %d pattern(s) in file %s w/ distance of %d\n",
+               nb_patterns, filename, approx_factor);
+
         int dest_rank;
 
         for (i = 0; i < n_bytes; i += chunk_size)
@@ -1115,6 +1126,7 @@ void decision_6(int rank, int N, int nb_patterns, char *filename, int approx_fac
                     }
                     free(column);
                 }
+
                 local_n_matches[i] += local_num;
             }
         }
@@ -1206,7 +1218,7 @@ void decision_12(int rank, int N, int nb_patterns, char *filename, int approx_fa
     int nbGPU;
     cudaGetDeviceCount(&nbGPU);
     cudaSetDevice(rank % nbGPU);
-    findMatch(local_n_matches, buf, nb_patterns, pattern, start_point, end_point, n_bytes, approx_factor, 0.95);
+    findMatch(local_n_matches, buf, nb_patterns, pattern, start_point, end_point, n_bytes, approx_factor, 0.9);
 
     /*****
      * END MAIN LOOP
@@ -1518,10 +1530,10 @@ int main(int argc, char **argv)
     {
 
         bool OMP = true;
-        bool GPU = true;
-        int deviceCount;
-        cudaGetDeviceCount(&deviceCount);
-        GPU = deviceCount > 0;
+        bool GPU = false;
+        // int deviceCount;
+        // cudaGetDeviceCount(&deviceCount);
+        // GPU = deviceCount > 0;
         int num_threads = 0;
 
 #pragma omp parallel
