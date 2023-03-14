@@ -10,6 +10,8 @@ The contributors of this project are **Changjie Wang** and **Chinonso Stanislaus
 
 This project is guided by professor **Patrick CARRIBAULT**
 
+Click here for our [paper](INF560.pdf)
+
 #### File architecture
 
 * apm/dna contains the dna database we use for matching
