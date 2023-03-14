@@ -1533,7 +1533,7 @@ int main(int argc, char **argv)
         OMP = num_threads > 1;
         if (OMP)
         {
-            // omp_set_num_threads(2);
+            omp_set_num_threads(2);
         }
         printf("GPU: %d OMP: %d\n", GPU, num_threads);
 

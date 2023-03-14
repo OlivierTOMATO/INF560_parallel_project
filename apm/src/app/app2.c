@@ -1542,12 +1542,13 @@ int main(int argc, char **argv)
             // printf("Number of threads in OpenMP parallel region: %d\n", num_threads);
         }
 
-        OMP = num_threads > 1;
-        if (OMP)
-        {
-            // omp_set_num_threads(2);
-        }
         printf("GPU: %d OMP: %d\n", GPU, num_threads);
+
+        // OMP = num_threads > 1;
+        // if (OMP)
+        // {
+        //     omp_set_num_threads(4);
+        // }
 
         printf("%s\n", "We are assuming that one will never input patterns more than 20, otherwise it makes our app look redundant");
         if (nb_patterns % N == 0)
@@ -1686,12 +1687,14 @@ int main(int argc, char **argv)
         break;
     case 5:
         decision_5(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
+        // decision_6(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
         break;
     case 6:
         decision_6(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
         break;
     case 7:
         decision_7(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
+        // decision_8(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
         break;
     case 8:
         decision_8(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);

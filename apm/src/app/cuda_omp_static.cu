@@ -81,7 +81,6 @@ void __global__ matches_kernel(char *d_buf, char *d_pattern, int *d_num, int siz
     int stride = blockDim.x * gridDim.x;
     int distance = 0;
     int size;
-    int num_local = 0;
 
     size = size_pattern;
     int *columns = (int *)malloc((size_pattern + 1) * sizeof(int));
@@ -106,7 +105,6 @@ extern "C" void findMatch(int *local_n_matches, char *buf, int nb_patterns, char
 {
     int *d_num;
     char *d_pattern;
-    int num;
     int i;
     char *d_buf;
     int end_1 = start + (end - start) * percentage;
