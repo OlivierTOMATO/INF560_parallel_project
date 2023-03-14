@@ -1,0 +1,24 @@
+#!/bin/bash -l
+
+#SBATCH -n 4
+#SBATCH -N 2
+
+
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static 2 ../../dna/chr7.fa    AATGCTAGATTTAAGGAGTTGCTTA
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static_p 2 ../../dna/chr7.fa  AATGCTAGATTTAAGGAGTTGCTTA
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static 2 ../../dna/chr7.fa    AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT  
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static_p 2 ../../dna/chr7.fa  AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT  
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static 2 ../../dna/chr7.fa    AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT  
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static_p 2 ../../dna/chr7.fa  AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT  
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static 2 ../../dna/chr7.fa    AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC  
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static_p 2 ../../dna/chr7.fa  AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC 
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static 2 ../../dna/chr7.fa    AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac 
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static_p 2 ../../dna/chr7.fa  AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac 
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static 2 ../../dna/chr7.fa    AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static_p 2 ../../dna/chr7.fa  AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static 2 ../../dna/chr7.fa    AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static_p 2 ../../dna/chr7.fa  AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static 2 ../../dna/chr7.fa    AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static_p 2 ../../dna/chr7.fa  AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static 2 ../../dna/chr7.fa    AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac
+OMP_NUM_THREADS=8 mpirun ./cj_apm_mpi_static_p 2 ../../dna/chr7.fa  AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac AATGCTAGATTTAAGGAGTTGCTTA AAAAATCTTTGTATTAGAAAAAGT TCCTTTTAAAAATATCTGTGAT ttttttttttttAAGATTAATGAC ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac ggtgggcgccaccac
