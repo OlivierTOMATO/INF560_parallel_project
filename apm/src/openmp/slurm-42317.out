@@ -1,0 +1,7 @@
+MPI ONLY: Each pattern is handled by different MPI ranks, this is useful when No. of Ranks (8) < (2) No. of Patterns
+Approximate Pattern Matching: looking for 2 pattern(s) in file ../../dna/chr22.fa w/ distance of 2
+file size: 51834845
+Number of matches for pattern <AABCCC>: 296393
+Number of matches for pattern <ABBCCC>: 88065
+APM done in 7.320624 s
+
