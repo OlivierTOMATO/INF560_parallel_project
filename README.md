@@ -1,6 +1,6 @@
 # INF560-parallel-algorithm
 
-#### Description
+## Description
 
 In this project, we are targetted at implementing some paralleing algorithms (i.e., OPENMP, MPI, CUDA...) to achieve higher performance in a pattern matching problem in course INF560 Algorithmique parallèle et distribuée. 
 
@@ -12,7 +12,7 @@ This project is guided by professor **Patrick CARRIBAULT**
 
 Click here for our [paper](INF560.pdf)
 
-#### File architecture
+## File architecture
 
 * apm/dna contains the dna database we use for matching
 
@@ -55,8 +55,8 @@ Click here for our [paper](INF560.pdf)
     * app/test2.batch gives test batch for decision 5-6
     * app/test3.batch gives test batch for decision 7-8
     * app/test4.batch gives test batch for decision 9-12
-
-#### How to run
+    
+## How to run
 
 * Enter app directory
 
