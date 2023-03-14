@@ -1,9 +1,0 @@
-MPI + OPENMP:
-MPI: Each pattern is handled by different MPI ranks, this is useful when No. of Ranks (4) < (1) No. of Patterns
- OPENMP: The chunk received by each rank is run in parallel in all the available threads
-Approximate Pattern Matching: looking for 1 pattern(s) in file ../../dna/chr7.fa w/ distance of 2
-file size: 12445630
-MPI Process: Each pattern is handled by different MPI ranks, this is useful when No. of Ranks (4) < (1) No. of Patterns
-Number of matches for pattern <AATGCTAGATTTAAGGAGTTGCTTA>: 2
-APM done in 28.902752 s
-
