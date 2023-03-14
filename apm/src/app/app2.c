@@ -1239,194 +1239,6 @@ void decision_12(int rank, int N, int nb_patterns, char *filename, int approx_fa
     }
 }
 
-// void decision_10(int rank, int N, int nb_patterns, char *filename, int approx_factor, int n_bytes, int *n_matches, char **pattern, char *buf)
-// {
-//     int i, j, p;
-//     MPI_Status status;
-
-//     /* Timer start */
-//     double start_time = MPI_Wtime();
-
-//     /*****
-//      * BEGIN MAIN LOOP
-//      ******/
-
-//     /* Check each pattern one by one */
-//     for (p = 0; p < nb_patterns; p++)
-//     {
-//         int local_match = 0;
-//         if (rank == 0)
-//         {
-//             int dest_rank;
-
-//             for (i = 0; i < n_bytes; i += chunk_size)
-//             {
-//                 MPI_Recv(&dest_rank, 1, MPI_INTEGER, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-//                 MPI_Send(&i, 1, MPI_INTEGER, dest_rank, 0, MPI_COMM_WORLD);
-//             }
-
-//             /* send a message that tell the workers to stop */
-//             for (dest_rank = 1; dest_rank < N; dest_rank++)
-//             {
-//                 int ready;
-//                 MPI_Recv(&ready, 1, MPI_INTEGER, dest_rank, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-//                 int stop_value = -1;
-//                 MPI_Send(&stop_value, 1, MPI_INTEGER, dest_rank, 0, MPI_COMM_WORLD);
-//             }
-//         }
-//         else
-//         {
-//             // printf("In rank %d\n", rank);
-//             int index;
-//             int start;
-//             int end;
-
-//             int nbGPU;
-//             cudaGetDeviceCount(&nbGPU);
-//             cudaSetDevice(rank % nbGPU);
-
-//             while (1)
-//             {
-//                 MPI_Send(&rank, 1, MPI_INTEGER, 0, 1, MPI_COMM_WORLD);
-//                 MPI_Recv(&index, 1, MPI_INTEGER, 0, 0, MPI_COMM_WORLD, &status);
-//                 if (index == -1)
-//                 {
-//                     break;
-//                 }
-//                 int size_pattern = strlen(pattern[p]);
-
-//                 /* Initialize the number of matches to 0 */
-//                 /* Traverse the input data up to the end of the file */
-
-//                 end = index + chunk_size;
-//                 if (end >= n_bytes)
-//                 {
-//                     end = n_bytes;
-//                 }
-//                 start = index;
-
-//                 findMatch(&local_match, buf, 1, &pattern[p], start, end, n_bytes, approx_factor, 0.9);
-//             }
-//         }
-//         MPI_Reduce(&local_match, &n_matches[p], 1, MPI_INTEGER, MPI_SUM, 0, MPI_COMM_WORLD);
-//     }
-
-//     if (rank == 0)
-//     {
-//         printf("MPI + OPENMP: \nMPI: Each pattern is taken one by one and the file split between other MPI ranks by rank 0 for each pattern.\nOPENMP: The chunk received by each rank is run in parallel in all the available threads\n");
-
-//         printf("Approximate Pattern Matching: "
-//                "looking for %d pattern(s) in file %s w/ distance of %d\n",
-//                nb_patterns, filename, approx_factor);
-//         printf("file size: %d\n", n_bytes);
-//         printf("MPI Process: taking each pattern and splitting into different processes then compute and repeat for all patterns \n");
-//         for (i = 0; i < nb_patterns; i++)
-//         {
-//             printf("Number of matches for pattern <%s>: %d\n",
-//                    pattern[i], n_matches[i]);
-//         }
-//         /* Timer stop */
-//         double end_time = MPI_Wtime();
-//         printf("APM done in %lf s\n\n", end_time - start_time);
-//     }
-// }
-
-// void decision_11(int rank, int N, int nb_patterns, char *filename, int approx_factor, int n_bytes, int *n_matches, char **pattern, char *buf)
-// {
-/* Timer start */
-//     double start_time = MPI_Wtime();
-//     int i, j;
-//     n_matches = (int *)malloc(nb_patterns * sizeof(int));
-//     int *local_n_matches = (int *)malloc((nb_patterns) * sizeof(int));
-//     for (i = 0; i < nb_patterns; i++)
-//     {
-//         n_matches[i] = 0;
-//         local_n_matches[i] = 0;
-//     }
-//     MPI_Status status;
-//     // the variable to set
-//     int freq = n_bytes / chunk_size + (n_bytes % chunk_size > 0);
-
-//     if (rank == 0)
-//     {
-//         printf("MPI + OPENMP: \nMPI: Divide the record file into chunck(constant) and Allocate it dynamically in rank 0 to other ranks and Other ranks will deal with all patterns sequentially with thier chunks\nOPENMP: The chunk received by each rank is run in parallel in all the available threads\n");
-
-//         printf("Approximate Pattern Mathing: "
-//                "looking for %d pattern(s) in file %s w/ distance of %d\n",
-//                nb_patterns, filename, approx_factor);
-
-//         int dest_rank;
-
-//         for (i = 0; i < n_bytes; i += chunk_size)
-//         {
-//             MPI_Recv(&dest_rank, 1, MPI_INTEGER, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-//             MPI_Send(&i, 1, MPI_INTEGER, dest_rank, 0, MPI_COMM_WORLD);
-//         }
-
-//         /* send a message that tell the workers to stop */
-//         for (dest_rank = 1; dest_rank < N; dest_rank++)
-//         {
-//             int ready;
-//             MPI_Recv(&ready, 1, MPI_INTEGER, dest_rank, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-//             int stop_value = -1;
-//             MPI_Send(&stop_value, 1, MPI_INTEGER, dest_rank, 0, MPI_COMM_WORLD);
-//         }
-//     }
-//     else
-//     {
-//         int index;
-//         int start;
-//         int end;
-//         int nbGPU;
-//         cudaGetDeviceCount(&nbGPU);
-//         cudaSetDevice(rank % nbGPU);
-//         int sum = 0;
-//         while (1)
-//         {
-//             int *local = (int *)malloc((nb_patterns) * sizeof(int));
-//             MPI_Send(&rank, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
-//             MPI_Recv(&index, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-//             if (index == -1)
-//             {
-//                 break;
-//             }
-
-//             /* Initialize the number of matches to 0 */
-//             end = index + chunk_size;
-//             if (end >= n_bytes)
-//             {
-//                 end = n_bytes;
-//             }
-//             start = index;
-//             findMatch(local, buf, nb_patterns, pattern, start, end, n_bytes, approx_factor, 1);
-//             for (i = 0; i < nb_patterns; i++)
-//             {
-//                 local_n_matches[i] += local[i];
-//             }
-//         }
-//         printf("%d %d\n", sum, local_n_matches[1]);
-//     }
-//     MPI_Reduce(local_n_matches, n_matches, nb_patterns, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-
-//     if (rank == 0)
-//     {
-//         /* Timer stop */
-//         double end_time = MPI_Wtime();
-
-//         for (i = 0; i < nb_patterns; i++)
-//         {
-//             printf("Number of matches for pattern <%s>: %d\n",
-//                    pattern[i], n_matches[i]);
-//         }
-//         printf("APM done in %lf s\n\n", end_time - start_time);
-//     }
-
-//     free(n_matches);
-// }
 
 int main(int argc, char **argv)
 {
@@ -1687,14 +1499,12 @@ int main(int argc, char **argv)
         break;
     case 5:
         decision_5(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-        // decision_6(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
         break;
     case 6:
         decision_6(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
         break;
     case 7:
         decision_7(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-        // decision_8(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
         break;
     case 8:
         decision_8(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
@@ -1713,19 +1523,7 @@ int main(int argc, char **argv)
         break;
     }
 
-    // decision_1(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_2(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_3(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_4(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_5(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_6(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_7(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_8(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_9(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_10(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_11(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-    // decision_12(rank, N, nb_patterns, filename, approx_factor, n_bytes, n_matches, pattern, buf);
-
+   
     MPI_Finalize();
 
     return 0;
